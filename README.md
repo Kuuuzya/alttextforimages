@@ -1,9 +1,9 @@
-# ITZine Alt Generator
+# AltTextGPT
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Kuuuzya/alttextforimages)
 ![License](https://img.shields.io/github/license/Kuuuzya/alttextforimages)
 
-**ITZine Alt Generator** — это WordPress плагин для автоматической генерации атрибутов `Alt`, `Title` и `Description` для изображений в Media Library с использованием мощи **OpenAI Vision API**.
+**AltTextGPT** — это WordPress плагин для автоматической генерации атрибутов `Alt`, `Title` и `Description` для изображений в Media Library с использованием мощи **OpenAI Vision API**.
 
 ## ✨ Возможности
 
@@ -27,11 +27,11 @@
 cd wp-content/plugins/
 git clone https://github.com/Kuuuzya/alttextforimages.git itzine-alt-generator
 ```
-После чего перейдите в админ-панель WordPress и активируйте плагин **ITZine Alt Generator**.
+После чего перейдите в админ-панель WordPress и активируйте плагин **AltTextGPT**.
 
 ## ⚙️ Настройка
 
-1. Перейдите в раздел **Медиафайлы > Alt Generator** в боковом меню консоли WordPress.
+1. Перейдите в раздел **Медиафайлы > AltTextGPT** в боковом меню консоли WordPress.
 2. Вставьте ваш **OpenAI API Key** (получить можно на сайте [OpenAI](https://platform.openai.com/api-keys)).
 3. Выберите нужную модель, настройте промпт, максимальное количество токенов (max_tokens) и степень случайности (Temperature).
 4. Нажмите **Сохранить**. 
@@ -39,7 +39,7 @@ git clone https://github.com/Kuuuzya/alttextforimages.git itzine-alt-generator
 ## 🚀 Использование
 
 В "Медиатеке" WordPress (в режиме сетки) у вас появится функционал:
-- Кликнув на изображение, вы увидите раздел Alt Generator с кнопкой сгенерировать.
+- Кликнув на изображение, вы увидите раздел AltTextGPT с кнопкой сгенерировать.
 - В режиме Bulk Select (массовый выбор) можно выбрать несколько изображений и нажать кнопку "Сгенерировать Alt/Title/Desc" — плагин поочередно обработает все картинки.
 
 ## 🤝 Вклад в развитие (Contributing)

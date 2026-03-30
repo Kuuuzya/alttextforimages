@@ -1,15 +1,15 @@
 <?php
 /**
- * Plugin Name: ITZine Alt Generator
+ * Plugin Name: AltTextGPT
  * Description: Автоматическая генерация Alt, Title и Description для изображений через OpenAI Vision
- * Version: 1.4.1
+ * Version: 1.5.0
  * Author: Kuuuzya
  * Text Domain: itzine-alt-generator
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('IAG_VERSION', '1.4.1');
+define('IAG_VERSION', '1.5.0');
 define('IAG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('IAG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('IAG_OPTION_KEY', 'iag_settings');
@@ -17,7 +17,7 @@ define('IAG_OPTION_KEY', 'iag_settings');
 // ─── Settings ─────────────────────────────────────────────────────────────────
 
 add_action('admin_menu', function () {
-    add_media_page('Alt Generator', 'Alt Generator', 'manage_options', 'itzine-alt-generator', 'iag_render_settings_page');
+    add_media_page('AltTextGPT', 'AltTextGPT', 'manage_options', 'itzine-alt-generator', 'iag_render_settings_page');
 });
 
 add_action('admin_init', function () {
@@ -67,7 +67,7 @@ function iag_render_settings_page() {
                     <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M10 1L12.5 7.5H19L13.5 11.5L15.5 18L10 14L4.5 18L6.5 11.5L1 7.5H7.5L10 1Z"/></svg>
                 </div>
                 <div class="iag-topbar__titles">
-                    <span class="iag-topbar__name">Alt Generator</span>
+                    <span class="iag-topbar__name">AltTextGPT</span>
                     <span class="iag-topbar__meta">v<?= IAG_VERSION ?> · by Kuuuzya</span>
                 </div>
             </div>
@@ -190,7 +190,7 @@ function iag_render_settings_page() {
             </div>
         </div>
 
-        <div class="iag-footer">ITZine Alt Generator <?= IAG_VERSION ?> · by Kuuuzya · OpenAI Vision API</div>
+        <div class="iag-footer">AltTextGPT <?= IAG_VERSION ?> · by Kuuuzya · OpenAI Vision API</div>
     </div>
 
     <script><?php include IAG_PLUGIN_DIR . 'assets/js/admin-script.js'; ?></script>
