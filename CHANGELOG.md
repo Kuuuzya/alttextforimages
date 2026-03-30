@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - Unreleased
+## [1.4.1] - Unreleased
+### Changed
+- Отключена генерация альтов для черновиков (экономия токенов).
+- Добавлена мгновенная асинхронная генерация альтов сразу после публикации статьи с использованием её финального заголовка.
+
+## [1.4.0] - 2026-03-30
 ### Added
 - Оформлен репозиторий для GitHub (добавлены файлы README, LICENSE, .gitignore)
 - Перенос статических файлов `css` и `js` в отдельную директорию `assets/`

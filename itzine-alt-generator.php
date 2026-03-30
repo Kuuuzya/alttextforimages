@@ -2,14 +2,14 @@
 /**
  * Plugin Name: ITZine Alt Generator
  * Description: Автоматическая генерация Alt, Title и Description для изображений через OpenAI Vision
- * Version: 1.3.0
+ * Version: 1.4.1
  * Author: Kuuuzya
  * Text Domain: itzine-alt-generator
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('IAG_VERSION', '1.4.0');
+define('IAG_VERSION', '1.4.1');
 define('IAG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('IAG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('IAG_OPTION_KEY', 'iag_settings');
@@ -229,6 +229,64 @@ register_deactivation_hook(__FILE__, function () {
     wp_clear_scheduled_hook('iag_cron_generate');
 });
 
+// ─── Post Publish Auto-Trigger (Async) ────────────────────────────────────────
+
+add_action('transition_post_status', function ($new_status, $old_status, $post) {
+    if ($new_status === 'publish' && $old_status !== 'publish') {
+        $s = iag_get_settings();
+        if ($s['enabled'] && $s['api_key']) {
+            if (!wp_next_scheduled('iag_process_published_post', [$post->ID])) {
+                wp_schedule_single_event(time(), 'iag_process_published_post', [$post->ID]);
+            }
+        }
+    }
+}, 10, 3);
+
+add_action('iag_process_published_post', function ($post_id) {
+    $s = iag_get_settings();
+    if (!$s['enabled'] || !$s['api_key']) return;
+
+    global $wpdb;
+    
+    // Ищем картинки, привязанные к этому посту или находящиеся в его тексте
+    $attachments = $wpdb->get_col($wpdb->prepare("
+        SELECT p.ID FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_wp_attachment_image_alt'
+        WHERE p.post_type = 'attachment' AND p.post_mime_type LIKE 'image/%%'
+        AND p.post_parent = %d
+        AND NOT (
+            (p.post_title   != '' AND p.post_title   IS NOT NULL) AND
+            (p.post_content != '' AND p.post_content IS NOT NULL) AND
+            (pm.meta_value  != '' AND pm.meta_value  IS NOT NULL AND LENGTH(pm.meta_value) >= 15)
+        )
+    ", $post_id));
+
+    // Добавляем картинки, которые вшиты в текст, даже если post_parent у них другой
+    $post = get_post($post_id);
+    if ($post && !empty($post->post_content)) {
+        preg_match_all('/wp-image-([0-9]+)/i', $post->post_content, $matches);
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $pid) {
+                $pid = (int)$pid;
+                $alt = get_post_meta($pid, '_wp_attachment_image_alt', true);
+                if (empty($alt) || strlen(trim((string)$alt)) < 15) {
+                    $attachments[] = $pid;
+                }
+            }
+        }
+    }
+
+    $attachments = array_unique(array_filter($attachments));
+    if (empty($attachments)) return;
+
+    foreach ($attachments as $att_id) {
+        $result = iag_generate_for_attachment($att_id);
+        if (!isset($result['error'])) {
+            iag_sync_alt_in_post($post_id, $att_id, $result['data']['alt']);
+        }
+    }
+});
+
 // ─── Cron job: process images without description ─────────────────────────────
 
 add_action('iag_cron_generate', function () {
@@ -242,9 +300,11 @@ add_action('iag_cron_generate', function () {
         SELECT p.ID, p.post_parent
         FROM {$wpdb->posts} p
         LEFT JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_wp_attachment_image_alt'
+        LEFT JOIN {$wpdb->posts} parent ON parent.ID = p.post_parent
         WHERE p.post_type = 'attachment'
         AND p.post_mime_type LIKE 'image/%'
         AND p.post_status = 'inherit'
+        AND (p.post_parent = 0 OR parent.post_status IN ('publish', 'future', 'private'))
         AND NOT (
             (p.post_title   != '' AND p.post_title   IS NOT NULL) AND
             (p.post_content != '' AND p.post_content IS NOT NULL) AND
@@ -429,7 +489,9 @@ add_action('wp_ajax_iag_batch_next', function () {
     $row = $wpdb->get_row("
         SELECT p.ID, p.post_parent FROM {$wpdb->posts} p
         LEFT JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_wp_attachment_image_alt'
+        LEFT JOIN {$wpdb->posts} parent ON parent.ID = p.post_parent
         WHERE p.post_type='attachment' AND p.post_mime_type LIKE 'image/%' AND p.post_status='inherit'
+        AND (p.post_parent = 0 OR parent.post_status IN ('publish', 'future', 'private'))
         AND NOT (
             (p.post_title   != '' AND p.post_title   IS NOT NULL) AND
             (p.post_content != '' AND p.post_content IS NOT NULL) AND
