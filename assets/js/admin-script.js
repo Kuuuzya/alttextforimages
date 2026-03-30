@@ -31,10 +31,9 @@ document.getElementById('iag-test-btn').addEventListener('click', function () {
 });
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
-document.getElementById('iag-stats-btn').addEventListener('click', function () {
-    var btn = this;
-    btn.disabled    = true;
-    btn.textContent = 'Загружаю...';
+function iagLoadStats() {
+    var container = document.getElementById('iag-stats');
+    if (!container) return;
 
     fetch(ajaxurl, {
         method: 'POST',
@@ -43,14 +42,17 @@ document.getElementById('iag-stats-btn').addEventListener('click', function () {
     })
     .then(r => r.json())
     .then(d => {
-        if (!d.success) return;
+        if (!d.success) {
+            container.innerHTML = '<div class="iag-notice iag-notice--err">Ошибка загрузки статистики</div>';
+            return;
+        }
         var s   = d.data;
         var pct = s.percent;
         var r   = 28;
         var c   = 2 * Math.PI * r;
         var off = c - (pct / 100) * c;
 
-        document.getElementById('iag-stats').innerHTML = `
+        container.innerHTML = `
             <div class="iag-donut">
                 <svg viewBox="0 0 72 72" style="width:72px;height:72px;transform:rotate(-90deg)">
                     <circle cx="36" cy="36" r="${r}" fill="none" stroke="#f3f4f6" stroke-width="5"/>
@@ -78,7 +80,14 @@ document.getElementById('iag-stats-btn').addEventListener('click', function () {
                     <div class="iag-stat__l">Мусор</div>
                 </div>
             </div>`;
+    })
+    .catch(() => {
+        container.innerHTML = '<div class="iag-notice iag-notice--err">Ошибка соединения</div>';
     });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    iagLoadStats();
 });
 
 // ── Batch generation ──────────────────────────────────────────────────────────
@@ -117,6 +126,7 @@ document.getElementById('iag-stats-btn').addEventListener('click', function () {
             batchBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Запустить';
             label.textContent = 'Готово! Обработано: ' + processed;
             fill.style.width  = '100%';
+            iagLoadStats();
             return;
         }
 
@@ -138,6 +148,7 @@ document.getElementById('iag-stats-btn').addEventListener('click', function () {
                 batchBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Запустить';
                 label.textContent = 'Все обработаны! Итого: ' + processed;
                 fill.style.width  = '100%';
+                iagLoadStats();
                 return;
             }
 

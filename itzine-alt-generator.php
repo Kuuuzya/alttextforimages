@@ -97,7 +97,7 @@ function iag_render_settings_page() {
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
-                        <div class="iag-hint">platform.openai.com/api-keys</div>
+                        <div class="iag-hint">Ключ можно получить в панели <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI API Keys</a>.</div>
                     </div>
 
                     <div class="iag-field">
@@ -115,8 +115,8 @@ function iag_render_settings_page() {
                     <div class="iag-field">
                         <div class="iag-toggle-item">
                             <div>
-                                <div class="iag-label" style="margin-bottom:2px">Автогенерация (крон)</div>
-                                <div class="iag-hint">Обрабатывает изображения без description — значит ещё не проходили</div>
+                                <div class="iag-label" style="margin-bottom:2px">Автоматическая генерация</div>
+                                <div class="iag-hint">Автоматически создает альты <strong>при публикации статьи</strong>, а также запускает крон для одиночных картинок в медиабиблиотеке.</div>
                             </div>
                             <label class="iag-switch">
                                 <input type="hidden" name="<?= IAG_OPTION_KEY ?>[enabled]" value="0">
@@ -127,7 +127,7 @@ function iag_render_settings_page() {
                         <div class="iag-toggle-item">
                             <div>
                                 <div class="iag-label" style="margin-bottom:2px">Перезаписывать alt</div>
-                                <div class="iag-hint">Если выключено — пропускает фото у которых alt уже есть</div>
+                                <div class="iag-hint">Если включено — перепишет даже старые тексты. Выключено — обработает только картинки с пустыми полями.</div>
                             </div>
                             <label class="iag-switch">
                                 <input type="hidden" name="<?= IAG_OPTION_KEY ?>[overwrite_alt]" value="0">
@@ -146,7 +146,7 @@ function iag_render_settings_page() {
                             class="iag-range"
                             oninput="document.getElementById('iag-interval-val').textContent=this.value">
                         <div class="iag-range-labels"><span>1 мин</span><span>30 мин</span><span>60 мин</span></div>
-                        <div class="iag-hint">Изменение вступит в силу после сохранения и реактивации крона</div>
+                        <div class="iag-hint">Нужно для подстраховки и картинок, залитых прямо в библиотеку мимо статей. Изменение вступит в силу после сохранения.</div>
                     </div>
 
                     <div class="iag-actions">
@@ -181,9 +181,9 @@ function iag_render_settings_page() {
                 </div>
 
                 <div class="iag-panel">
-                    <div class="iag-panel__title">Статистика</div>
+                    <div class="iag-panel__title">Статистика базы</div>
                     <div id="iag-stats">
-                        <button type="button" class="iag-btn iag-btn--ghost iag-btn--full" id="iag-stats-btn">Загрузить</button>
+                        <div class="iag-stats-loader">Сбор данных...</div>
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@ register_deactivation_hook(__FILE__, function () {
 // ─── Post Publish Auto-Trigger (Async) ────────────────────────────────────────
 
 add_action('transition_post_status', function ($new_status, $old_status, $post) {
-    if ($new_status === 'publish' && $old_status !== 'publish') {
+    if ($new_status === 'publish') {
         $s = iag_get_settings();
         if ($s['enabled'] && $s['api_key']) {
             if (!wp_next_scheduled('iag_process_published_post', [$post->ID])) {
