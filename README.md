@@ -1,2 +1,51 @@
-# alttextforimages
-Plugin for Wordpress. ChatGPT generator of Alt Images
+# ITZine Alt Generator
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Kuuuzya/alttextforimages)
+![License](https://img.shields.io/github/license/Kuuuzya/alttextforimages)
+
+**ITZine Alt Generator** — это WordPress плагин для автоматической генерации атрибутов `Alt`, `Title` и `Description` для изображений в Media Library с использованием мощи **OpenAI Vision API**.
+
+## ✨ Возможности
+
+- 🤖 **Генерация на лету**: Выбирайте одно или несколько изображений в медиабиблиотеке и получайте для них атрибуты в несколько кликов.
+- 💨 **Пакетная обработка**: Автоматическая обработка выбранных картинок по очереди (Bulk Actions).
+- 🧠 **Поддержка моделей OpenAI**: Выбирайте нужную модель из настроек (`gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo` и др.).
+- ✍️ **Кастомный промпт**: Настройте под себя инструкцию для генерации Alt-текстов.
+
+## 📦 Установка
+
+### Установка из архива (ZIP)
+
+1. Перейдите на вкладку [Releases](../../releases) и скачайте последний архив с плагином.
+2. В админке WordPress перейдите в **Плагины > Добавить новый > Загрузить плагин**.
+3. Загрузите скачанный ZIP-архив и нажмите **Установить**.
+4. Активируйте плагин.
+
+### Установка через Git
+
+```bash
+cd wp-content/plugins/
+git clone https://github.com/Kuuuzya/alttextforimages.git itzine-alt-generator
+```
+После чего перейдите в админ-панель WordPress и активируйте плагин **ITZine Alt Generator**.
+
+## ⚙️ Настройка
+
+1. Перейдите в раздел **Медиафайлы > Alt Generator** в боковом меню консоли WordPress.
+2. Вставьте ваш **OpenAI API Key** (получить можно на сайте [OpenAI](https://platform.openai.com/api-keys)).
+3. Выберите нужную модель, настройте промпт, максимальное количество токенов (max_tokens) и степень случайности (Temperature).
+4. Нажмите **Сохранить**. 
+
+## 🚀 Использование
+
+В "Медиатеке" WordPress (в режиме сетки) у вас появится функционал:
+- Кликнув на изображение, вы увидите раздел Alt Generator с кнопкой сгенерировать.
+- В режиме Bulk Select (массовый выбор) можно выбрать несколько изображений и нажать кнопку "Сгенерировать Alt/Title/Desc" — плагин поочередно обработает все картинки.
+
+## 🤝 Вклад в развитие (Contributing)
+
+Мы будем рады Pull Request'ам. Если вы хотите добавить крупную фичу, пожалуйста, сначала создайте Issue для её обсуждения.
+
+## 📄 Лицензия
+
+Этот проект распространяется по лицензии [GPLv2 License](LICENSE).
